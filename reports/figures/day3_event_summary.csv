@@ -1,0 +1,4 @@
+event,count
+file_deleted,1
+login_failed,2
+login_success,2
