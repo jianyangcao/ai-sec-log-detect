@@ -1,0 +1,13 @@
+#macOS Finder files
+.DS_Store
+reports/.DS_Store
+
+#Cirtual Environment
+.venv/
+
+#Python cache
+__pycache__/
+
+#Temporary logs
+*.log
+*.tmp
