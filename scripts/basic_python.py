@@ -75,17 +75,25 @@ def parse_args():
         help='Path to input CSV with columns timestamp,event'
     )
     parser.add_argument(
-        '--out_dir',
+        '--out_dir_figures',
         type=str,
         default='reports/figures',
-        help='Dirrectory to write outputs(CVS+PNG)'
+        help='Dirrectory to write outputs(PNG)'
+    )  
+    parser.add_argument(
+        '--out_dir_csv',
+        type=str,
+        default='reports',
+        help='Dirrectory to write outputs(CVS)'
     )
     return parser.parse_args()
+
 
 def main():
     args=parse_args()
     in_path=Path(args.in_csv)
-    out_dir=Path(args.out_dir)
+    out_dir_figures=Path(args.out_dir_figures)
+    out_dir_csv=Path(args.out_dir_csv)
 
     #1) read events from CSV
     events=read_event(in_path)
@@ -94,11 +102,11 @@ def main():
     summary=count_frequency(events)
 
     #3) write summary CSV
-    out_csv=out_dir/'day3_event_summary.csv'
+    out_csv=out_dir_csv/'day3_event_summary.csv'
     write_summary(summary,out_csv)
 
     #4) plot bar chart
-    out_png=out_dir/'day3_event_frequency.png'
+    out_png=out_dir_figures/'day3_event_frequency.png'
     plot_bar(summary,out_png)
 
     print('Doen.')
