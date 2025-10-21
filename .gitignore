@@ -13,6 +13,3 @@ __pycache__/
 #Temporary logs
 *.log
 *.tmp
-
-#genreated pltost/reprots if large
-reports/figures/*.png
