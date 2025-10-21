@@ -4,10 +4,15 @@ reports/.DS_Store
 
 #Cirtual Environment
 .venv/
+.env/
 
 #Python cache
 __pycache__/
+*.pyc
 
 #Temporary logs
 *.log
 *.tmp
+
+#genreated pltost/reprots if large
+reports/figures/*.png
