@@ -1,0 +1,7 @@
+timestamp,user,event,status,ip
+2025-10-20 10:01:05,alice,login,success,192.168.0.1
+2025-10-20 10:02:10,bob,login,success,192.168.0.2
+2025-10-20 10:02:45,alice,download,success,192.168.0.1
+2025-10-20 10:03:00,root,delete,warning,192.168.0.10
+2025-10-20 10:05:30,root,logout,success,192.168.0.10
+2025-10-20 10:07:22,charlie,error,error,192.168.0.3

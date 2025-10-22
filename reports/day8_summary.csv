@@ -1,0 +1,5 @@
+,timestamp,user,event,status,ip
+count,6,6,6,6,6
+unique,6,4,5,3,4
+top,2025-10-20 10:01:05,alice,login,success,192.168.0.1
+freq,1,2,2,4,2
