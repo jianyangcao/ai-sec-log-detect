@@ -4,6 +4,7 @@ reports/.DS_Store
 
 #Cirtual Environment
 .venv/
+venv/
 .env/
 
 #Python cache
