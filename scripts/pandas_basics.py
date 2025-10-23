@@ -1,10 +1,10 @@
 import pandas as pd
 
-df=pd.read_csv('data/day_8')
+df=pd.read_csv('data/day_8.csv')
 print('loaded CSV sucessfully')
 
 #insepct the datastructure
-print(df.shape) #U(rows, columns)
+print(df.shape) #(rows, columns)
 print(df.info()) #data types and non-null counts
 print(df.columns) #column names
 print(df.head()) #print first 5 rows

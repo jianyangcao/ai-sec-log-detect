@@ -31,6 +31,6 @@ data = {
 df=pd.DataFrame(data)
 
 #save to csv
-csv_path=Path('data/day_8')
+csv_path=Path('data/day_8.csv')
 df.to_csv(csv_path,index=False)
 print(f"Sample data saved to {csv_path}")
