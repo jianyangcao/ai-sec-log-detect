@@ -26,7 +26,7 @@ def plot_event_frequency(df: pd.DataFrame, out_dir:Path):
     plt.xlabel('Event Type')
     plt.ylabel('Count')
     plt.tight_layout()
-    out_path=out_dir/'day10_bar.png'
+    out_path=out_dir/'bar.png'
     plt.savefig(out_path)
     print(f'saved bar chart to {out_path}')
     plt.close()
@@ -47,7 +47,7 @@ def plot_events_overtime(df: pd.DataFrame, out_dir:Path):
     plt.xlabel('Date')
     plt.ylabel('Number of Events')
     plt.tight_layout()
-    out_path=out_dir/'day10_line.png'
+    out_path=out_dir/'line.png'
     plt.savefig(out_path)
     print(f'saved line chart to {out_path}')
     plt.close()
