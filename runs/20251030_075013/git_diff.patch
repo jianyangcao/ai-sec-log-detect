@@ -1,0 +1,184 @@
+diff --git a/models/baseline_logreg.pkl b/models/baseline_logreg.pkl
+deleted file mode 100644
+index 5a37e80..0000000
+Binary files a/models/baseline_logreg.pkl and /dev/null differ
+diff --git a/reports/figures/logreg_confusion.png b/reports/figures/logreg_confusion.png
+index 5a4093e..9403fa4 100644
+Binary files a/reports/figures/logreg_confusion.png and b/reports/figures/logreg_confusion.png differ
+diff --git a/reports/figures/logreg_pr.png b/reports/figures/logreg_pr.png
+index 410d924..0a86989 100644
+Binary files a/reports/figures/logreg_pr.png and b/reports/figures/logreg_pr.png differ
+diff --git a/reports/figures/logreg_roc.png b/reports/figures/logreg_roc.png
+index b435556..f1e256d 100644
+Binary files a/reports/figures/logreg_roc.png and b/reports/figures/logreg_roc.png differ
+diff --git a/reports/metrics/logreg_metrics.json b/reports/metrics/logreg_metrics.json
+index 2847ce4..e93fafb 100644
+--- a/reports/metrics/logreg_metrics.json
++++ b/reports/metrics/logreg_metrics.json
+@@ -18,45 +18,45 @@
+     "negatives": 4758,
+     "positives": 242
+   },
+-  "roc_auc_test": 0.5030162336421651,
+-  "pr_auc_test": 0.04995610501673884,
++  "roc_auc_test": 0.47320042103946713,
++  "pr_auc_test": 0.045358118783252424,
+   "classification_report_test": {
+     "0": {
+-      "precision": 0.9536967886482449,
+-      "recall": 0.5367801597309794,
+-      "f1-score": 0.6869284561592254,
++      "precision": 0.9482237339380196,
++      "recall": 0.5273224043715847,
++      "f1-score": 0.6777417612101567,
+       "support": 4758.0
+     },
+     "1": {
+-      "precision": 0.050818260120585705,
+-      "recall": 0.48760330578512395,
+-      "f1-score": 0.09204368174726989,
++      "precision": 0.044604927782497875,
++      "recall": 0.43388429752066116,
++      "f1-score": 0.08089368258859785,
+       "support": 242.0
+     },
+-    "accuracy": 0.5344,
++    "accuracy": 0.5228,
+     "macro avg": {
+-      "precision": 0.5022575243844153,
+-      "recall": 0.5121917327580516,
+-      "f1-score": 0.3894860689532476,
++      "precision": 0.49641433086025877,
++      "recall": 0.48060335094612294,
++      "f1-score": 0.3793177218993773,
+       "support": 5000.0
+     },
+     "weighted avg": {
+-      "precision": 0.9099974678675062,
+-      "recall": 0.5344,
+-      "f1-score": 0.6581360330776868,
++      "precision": 0.9044885837200923,
++      "recall": 0.5228,
++      "f1-score": 0.6488543142048733,
+       "support": 5000.0
+     }
+   },
+   "confusion_matrix_test": [
+     [
+-      2554,
+-      2204
++      2509,
++      2249
+     ],
+     [
+-      124,
+-      118
++      137,
++      105
+     ]
+   ],
+-  "cv_roc_auc_train": 0.48061513398919536,
+-  "cv_pr_auc_train": 0.046148944599102376
++  "cv_roc_auc_train": 0.4864305022391524,
++  "cv_pr_auc_train": 0.04697211062716247
+ }
+\ No newline at end of file
+diff --git a/scripts/day12_train_logreg.py b/scripts/day12_train_logreg.py
+index bb63f52..33f0365 100644
+--- a/scripts/day12_train_logreg.py
++++ b/scripts/day12_train_logreg.py
+@@ -68,10 +68,14 @@ def ensure_label(df: pd.DataFrame, label_col: str | None) -> tuple[pd.DataFrame,
+ def main():
+     ap = argparse.ArgumentParser()
+     ap.add_argument("--in_csv", type=str, required=True)
+-    ap.add_argument("--label", type=str, default=None, help="Name of the true label column if available")
++    ap.add_argument('--out_dir', required=True)
++    ap.add_argument("--label_col", type=str, default=None, help="Name of the true label column if available")
+     ap.add_argument("--test_size", type=float, default=0.25)
+-    ap.add_argument("--random_state", type=int, default=42)
++    ap.add_argument("--seed", type=int, default=42)
++    ap.add_argument("--cv", type=int, default=5)
+     args = ap.parse_args()
++    out_dir=Path(args.out_dir)
++
+ 
+     in_path = Path(args.in_csv)
+     if not in_path.exists():
+@@ -81,7 +85,7 @@ def main():
+     df = pd.read_csv(in_path)
+ 
+     # --- Target ---
+-    df, label_col = ensure_label(df, args.label)
++    df, label_col = ensure_label(df, args.label_col)
+     y = df[label_col].astype(int).values
+ 
+     # --- Features ---
+@@ -92,7 +96,7 @@ def main():
+ 
+     # --- Train/Val split (stratified) ---
+     X_tr, X_te, y_tr, y_te = train_test_split(
+-        X, y, test_size=args.test_size, random_state=args.random_state, stratify=y
++        X, y, test_size=args.test_size, random_state=args.seed, stratify=y
+     )
+ 
+     # --- Pipeline: scale + logistic regression ---
+@@ -106,7 +110,7 @@ def main():
+     ])
+ 
+     # --- Cross-validated predictions on train for sanity (AUC, etc.) ---
+-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.random_state)
++    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
+     y_tr_prob = cross_val_predict(pipe, X_tr, y_tr, cv=cv, method="predict_proba")[:, 1]
+ 
+     # Fit on full train
+@@ -133,12 +137,12 @@ def main():
+     }
+ 
+     # --- Save model & metrics ---
+-    Path("models").mkdir(parents=True, exist_ok=True)
+-    Path("reports/metrics").mkdir(parents=True, exist_ok=True)
+-    Path("reports/figures").mkdir(parents=True, exist_ok=True)
++    Path(f"{out_dir}/models").mkdir(parents=True, exist_ok=True)
++    Path(f"{out_dir}/metrics").mkdir(parents=True, exist_ok=True)
++    Path(f"{out_dir}/figures").mkdir(parents=True, exist_ok=True)
+ 
+-    joblib.dump(pipe, "models/baseline_logreg.pkl")
+-    with open("reports/metrics/logreg_metrics.json", "w", encoding="utf-8") as f:
++    joblib.dump(pipe, f"{out_dir}/models/baseline_logreg.pkl")
++    with open(f"{out_dir}/metrics/logreg_metrics.json", "w", encoding="utf-8") as f:
+         json.dump(metrics, f, indent=2)
+ 
+     # --- Plots ---
+@@ -146,13 +150,13 @@ def main():
+     RocCurveDisplay.from_predictions(y_te, y_prob, ax=ax1)
+     ax1.set_title("LogReg ROC (test)")
+     fig1.tight_layout()
+-    fig1.savefig("reports/figures/logreg_roc.png", dpi=150)
++    fig1.savefig(f"{out_dir}/figures/logreg_roc.png", dpi=150)
+ 
+     fig2, ax2 = plt.subplots()
+     PrecisionRecallDisplay.from_predictions(y_te, y_prob, ax=ax2)
+     ax2.set_title("LogReg Precision-Recall (test)")
+     fig2.tight_layout()
+-    fig2.savefig("reports/figures/logreg_pr.png", dpi=150)
++    fig2.savefig(f"{out_dir}/figures/logreg_pr.png", dpi=150)
+ 
+     fig3, ax3 = plt.subplots()
+     cm = confusion_matrix(y_te, y_hat)
+@@ -163,12 +167,12 @@ def main():
+         ax3.text(j, i, str(v), ha="center", va="center")
+     fig3.colorbar(im, ax=ax3, fraction=0.046, pad=0.04)
+     fig3.tight_layout()
+-    fig3.savefig("reports/figures/logreg_confusion.png", dpi=150)
++    fig3.savefig(f"{out_dir}/figures/logreg_confusion.png", dpi=150)
+ 
+     print("✅ Trained and saved baseline logistic regression.")
+-    print("   Model:   models/baseline_logreg.pkl")
+-    print("   Metrics: reports/metrics/logreg_metrics.json")
+-    print("   Figures: reports/figures/logreg_*.png")
++    print(f"   Model:   {out_dir}/baseline_logreg.pkl")
++    print(f"   Metrics: {out_dir}/metrics/logreg_metrics.json")
++    print(f"   Figures: {out_dir}/figures/logreg_*.png")
+ 
+ if __name__ == "__main__":
+     main()
